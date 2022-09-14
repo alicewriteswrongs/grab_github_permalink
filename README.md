@@ -24,3 +24,12 @@ static int check_name(const char *name)
 You can install this from
 [crates.io](https://crates.io/crates/grab_github_permalink) or clone this repo
 and build from source, there's nothing fancy going on here build-wise.
+
+Then you can
+
+```sh
+grab_github_permalink $URL
+```
+
+and it will just spit it to STDOUT. I'd suggest piping to `pbcopy` or `xsel` or
+whatever you have handy!
