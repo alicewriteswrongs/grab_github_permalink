@@ -2,8 +2,8 @@
 name = "grab_github_permalink"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+repository = "https://github.com/alicewriteswrongs/grab_github_permalink"
+description = "a small CLI utility for grabbing a range of a file on Github"
 
 [dependencies]
 clap = { version = "3.2.21", features = [ "derive" ] }
