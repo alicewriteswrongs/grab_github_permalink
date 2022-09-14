@@ -336,7 +336,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "github_permalink_to_code"
+name = "grab_github_permalink"
 version = "0.1.0"
 dependencies = [
  "anyhow",
