@@ -18,3 +18,9 @@ static int check_name(const char *name)
 	return 0;
 }
 ```
+
+## Usage
+
+You can install this from
+[crates.io](https://crates.io/crates/grab_github_permalink) or clone this repo
+and build from source, there's nothing fancy going on here build-wise.
