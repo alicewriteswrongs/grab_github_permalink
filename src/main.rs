@@ -10,7 +10,7 @@ use url::Url;
 struct Cli {
     permalink: Option<String>,
     #[clap(short, long, action, help = "Format code snippet with Markdown")]
-    md: bool,
+    markdown: bool,
 }
 
 fn print_matches(document: &Html, selector: &Selector) {
@@ -78,7 +78,7 @@ fn main() -> Result<()> {
                 // the line numbers look like "L24" or "L24-L34"
                 let line_numbers = parse_github_url_line_numbers(line_numbers)?;
 
-                if cli.md {
+                if cli.markdown {
                     print_markdown_header(&url, Some(&line_numbers));
                 }
 
@@ -99,7 +99,7 @@ fn main() -> Result<()> {
                 // I'm not using `?`)
                 let selector = Selector::parse(".blob-code-inner").unwrap();
 
-                if cli.md {
+                if cli.markdown {
                     print_markdown_header(&url, None)
                 }
 
@@ -107,7 +107,7 @@ fn main() -> Result<()> {
             }
         }
 
-        if cli.md {
+        if cli.markdown {
             print_markdown_footer();
         }
     }
