@@ -1,6 +1,6 @@
 [package]
 name = "grab_github_permalink"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 repository = "https://github.com/alicewriteswrongs/grab_github_permalink"
 description = "a small CLI utility for grabbing a range of a file on Github"
