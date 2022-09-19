@@ -1,5 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
+use regex::Regex;
 use reqwest::blocking::get;
 use scraper::{Html, Selector};
 use url::Url;
@@ -8,6 +9,8 @@ use url::Url;
 #[clap(author, version, about)]
 struct Cli {
     permalink: Option<String>,
+    #[clap(short, long, action, help = "Format code snippet with Markdown")]
+    md: bool,
 }
 
 fn print_matches(document: &Html, selector: &Selector) {
@@ -17,6 +20,46 @@ fn print_matches(document: &Html, selector: &Selector) {
         // and on other lines it's always safe to do so
         println!("{}", text.trim_end());
     }
+}
+
+fn parse_file_path(url: &Url) -> String {
+    let regex = Regex::new(r".*/blob/[a-z0-9]+/(.*$)").unwrap();
+    regex.captures(url.path()).unwrap()[1].to_string()
+}
+
+fn parse_github_url_line_numbers(fragment: &str) -> Result<Vec<u32>> {
+    let mut line_numbers = fragment
+        .split('-')
+        .map(|str| str.replace('L', ""))
+        .map(|num| {
+            let num = str::parse::<u32>(&num)?;
+            Ok(num)
+        })
+        .collect::<Result<Vec<u32>>>()?;
+    line_numbers.sort_unstable();
+    Ok(line_numbers)
+}
+
+fn print_markdown_header(url: &Url, line_numbers: Option<&Vec<u32>>) {
+    match line_numbers {
+        Some(numbers) => {
+            println!(
+                "[{}:L{}-L{}]({})",
+                parse_file_path(url),
+                numbers[0],
+                numbers[1],
+                url
+            )
+        }
+        None => {
+            println!("[{}]({})", parse_file_path(url), url)
+        }
+    };
+    println!("```")
+}
+
+fn print_markdown_footer() {
+    println!("```");
 }
 
 fn main() -> Result<()> {
@@ -33,15 +76,11 @@ fn main() -> Result<()> {
         match url.fragment() {
             Some(line_numbers) => {
                 // the line numbers look like "L24" or "L24-L34"
-                let mut line_numbers: Vec<u32> = line_numbers
-                    .split('-')
-                    .map(|str| str.replace('L', ""))
-                    .map(|num| {
-                        let num = str::parse::<u32>(&num)?;
-                        Ok(num)
-                    })
-                    .collect::<Result<Vec<u32>>>()?;
-                line_numbers.sort_unstable();
+                let line_numbers = parse_github_url_line_numbers(line_numbers)?;
+
+                if cli.md {
+                    print_markdown_header(&url, Some(&line_numbers));
+                }
 
                 // this is ugly but don't worry about it
                 // we make a range between the first and last line number, and then go through
@@ -56,10 +95,20 @@ fn main() -> Result<()> {
             }
             None => {
                 // this shouldn't ever fail and there seems to be some incompatibility with
-                // anyhow that I don't want to get to the bottom of right now
+                // anyhow that I don't want to get to the bottom of right now (so that's why
+                // I'm not using `?`)
                 let selector = Selector::parse(".blob-code-inner").unwrap();
+
+                if cli.md {
+                    print_markdown_header(&url, None)
+                }
+
                 print_matches(&document, &selector);
             }
+        }
+
+        if cli.md {
+            print_markdown_footer();
         }
     }
 
