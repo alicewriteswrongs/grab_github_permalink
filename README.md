@@ -41,7 +41,7 @@ formatted as a Markdown code block with a link to the original. The example link
 above will come out like this:
 
 [fs/autofs/dev-ioctl.c:L28-L36](https://github.com/torvalds/linux/blob/master/fs/autofs/dev-ioctl.c#L28-L36)
-```
+```c
 typedef int (*ioctl_fn)(struct file *, struct autofs_sb_info *,
 			struct autofs_dev_ioctl *);
 
