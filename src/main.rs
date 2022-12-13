@@ -47,7 +47,7 @@ fn print_markdown_header(url: &Url, line_numbers: Option<&Vec<u32>>) {
                 "[{}:L{}-L{}]({})",
                 parse_file_path(url),
                 numbers[0],
-                numbers[1],
+                numbers.get(1).unwrap_or(&numbers[0]),
                 url
             )
         }
