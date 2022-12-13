@@ -3,6 +3,7 @@ use clap::Parser;
 use regex::Regex;
 use reqwest::blocking::get;
 use scraper::{Html, Selector};
+use std::path::Path;
 use url::Url;
 
 #[derive(Parser)]
@@ -41,11 +42,18 @@ fn parse_github_url_line_numbers(fragment: &str) -> Result<Vec<u32>> {
 }
 
 fn print_markdown_header(url: &Url, line_numbers: Option<&Vec<u32>>) {
+    let file_path = parse_file_path(url);
+
+    let extension = Path::new(&file_path)
+        .extension()
+        .and_then(|ext| ext.to_str())
+        .unwrap();
+
     match line_numbers {
         Some(numbers) => {
             println!(
                 "[{}:L{}-L{}]({})",
-                parse_file_path(url),
+                file_path,
                 numbers[0],
                 numbers.get(1).unwrap_or(&numbers[0]),
                 url
@@ -55,7 +63,7 @@ fn print_markdown_header(url: &Url, line_numbers: Option<&Vec<u32>>) {
             println!("[{}]({})", parse_file_path(url), url)
         }
     };
-    println!("```")
+    println!("```{}", extension)
 }
 
 fn print_markdown_footer() {
